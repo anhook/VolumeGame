@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volume Discrimination Game</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #000000;
+            min-height: 100vh;
+            color: #ffffff;
+        }
+        
+		.vertical-div {
+			display: block;
+			width: 100%;
+			margin-bottom: 20px; /* Espacement entre les divs */
+		}
+        .container {
+            background: linear-gradient(145deg, #1a1a1a, #0d0d0d)mess;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+            border: 2px solid #333333;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            background: linear-gradient(135deg, #ffffff, #cccccc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #ffffff;
+            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #444444;
+        }
+        
+        .audio-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .audio-group {
+            text-align: center;
+        }
+        
+        .audio-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .play-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px solid #666666;
+            background-color: #595959;
+            color: #ffffff;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.8);
+        }
+        
+        .stop-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px solid #dc3545;
+            background-color: #595959;
+            color: #ffffff;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+        }
+        
+        .play-btn:hover, .stop-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .play-btn:active, .stop-btn:active {
+            transform: translateY(0);
+        }
+        
+        .play-btn:disabled, .stop-btn:disabled {
+            background: #262626;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .choice-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .choice-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background-color: #595959;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .choice-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .choice-btn:disabled {
+            background: #262626;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .message {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1 rem;
+            font-weight: bold;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            color: #ffffff;
+        }
+        
+        .success {
+			display: block;
+            background: linear-gradient(145deg, #1e4d2b, #155724);
+            border: 2px solid #28a745;
+            color: #ffffff;
+        }
+        
+        .error {
+			display: block;
+            background: linear-gradient(145deg, #4d1e1e, #721c24);
+            border: 2px solid #dc3545;
+            color: #ffffff;
+        }
+        
+        .info {
+			display: block;
+            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            border: 2px solid #666666;
+            color: #ffffff;
+        }
+        
+        .next-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 15px 30px;
+            border: 2px solid #666666;
+            border-radius: 10px;
+            background: linear-gradient(145deg, #333333, #1a1a1a);
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .next-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.9);
+            background: linear-gradient(145deg, #444444, #2a2a2a);
+            border-color: #888888;
+        }
+        
+        .file-upload {
+            margin-bottom: 20px;
+            text-align: center;
+            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #444444;
+        }
+        
+        .difficulty-selector {
+            margin-bottom: 20px;
+            text-align: center;
+            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #444444;
+        }
+        
+        .difficulty-slider {
+            width: 100%;
+            max-width: 300px;
+            height: 8px;
+            border-radius: 5px;
+            accent-color: #990000;
+            outline: none;
+            margin: 10px 0;
+            border: 1px solid #555555;
+        }
+        
+        .difficulty-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            accent-color: #990000;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .difficulty-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            accent-color: #990000;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .difficulty-slider::-ms-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            accent-color: #990000;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .difficulty-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #dc3545;
+        }
+        
+        .file-input {
+            margin: 10px 0;
+            padding: 10px;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .instructions {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .results-table {
+            margin: 20px 0;
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .results-table th,
+        .results-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .results-table th {
+            background: rgba(255, 255, 255, 0.1);
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .results-table td {
+            font-size: 0.85rem;
+        }
+        
+        .result-correct {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .result-incorrect {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+        .summary-container {
+			display: block;
+            max-height: 300px;
+            overflow-y: auto;
+            border-radius: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .audio-section {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .choice-section {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .play-btn, .stop-btn {
+                width: 70px;
+                height: 70px;
+                font-size: 0.8rem;
+            }
+            
+            .results-table th,
+            .results-table td {
+                padding: 8px 4px;
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 Volume Discrimination Game 🎵</h1>
+        
+        <div class="instructions">
+            <h3>Instructions:</h3>
+            <p>1. Add your audio files (WAV/MP3) below</p>
+            <p>2. Adjust the difficulty level and number of rounds</p>
+            <p>3. Listen to both sounds by clicking the ▶️ buttons (use ⏹️ to stop)</p>
+            <p>4. Determine which sound is louder, or if they are equal</p>
+            <p>5. Click the corresponding button for your choice</p>
+            <p>6. Get the best score possible!</p>
+        </div>
+        
+        <div class="file-upload">
+            <h3>Add your audio files:</h3>
+            <input type="file" id="audioFiles" multiple accept=".wav,.mp3,.m4a,.ogg" class="file-input">
+            <p>Supported formats: WAV, MP3, M4A, OGG</p>
+        </div>
+        
+        <div class="difficulty-selector">
+            <h3>🎯 Difficulty Level</h3>
+            <p>Minimum volume difference: <span class="difficulty-value" id="difficultyValue">30%</span></p>
+            <input type="range" id="difficultySlider" class="difficulty-slider" 
+                   min="5" max="50" value="30" step="5">
+            <p style="font-size: 0.9rem; margin-top: 10px;">
+                5% = Very hard | 30% = Normal | 50% = Easy
+            </p>
+            
+            <h3 style="margin-top: 30px;">🎲 Number of Rounds</h3>
+            <p>Rounds per game: <span class="difficulty-value" id="roundsValue">10</span></p>
+            <input type="range" id="roundsSlider" class="difficulty-slider" 
+                   min="5" max="20" value="10" step="1">
+            <p style="font-size: 0.9rem; margin-top: 10px;">
+                5 = Short | 10 = Normal | 20 = Long
+            </p>
+        </div>
+        
+        <div class="game-info">
+            <div>Round: <span id="round">1</span>/<span id="maxRounds">10</span></div>
+            <div>Score: <span id="score">0</span>/<span id="maxRounds2">10</span></div>
+        </div>
+        
+        <div class="audio-section">
+            <div class="audio-group">
+                <h3>Sound A</h3>
+                <div class="audio-controls">
+                    <button class="play-btn" id="playA" disabled>
+                        ▶️<br>Play
+                    </button>
+                    <button class="stop-btn" id="stopA" disabled>
+                        ⏹️<br>Stop
+                    </button>
+                </div>
+            </div>
+            
+            <div class="audio-group">
+                <h3>Sound B</h3>
+                <div class="audio-controls">
+                    <button class="play-btn" id="playB" disabled>
+                        ▶️<br>Play
+                    </button>
+                    <button class="stop-btn" id="stopB" disabled>
+                        ⏹️<br>Stop
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="choice-section">
+            <button class="choice-btn" id="choiceA" disabled>
+                Sound A louder
+            </button>
+            <button class="choice-btn" id="choiceEqual" disabled>
+                Sounds equal
+            </button>
+            <button class="choice-btn" id="choiceB" disabled>
+                Sound B louder
+            </button>
+        </div>
+        
+        <div class="message info" id="message">
+            Add audio files to start the game!
+        </div>
+        
+        <button class="next-btn" id="nextRound" style="display: none;">
+            Next Round
+        </button>
+    </div>
+
+    <script>
+        class VolumeDiscriminationGame {
+            constructor() {
+                this.audioFiles = [];
+                this.currentRound = 1;
+                this.score = 0;
+                this.maxRounds = 10;
+                this.currentAudio = null;
+                this.audioA = null;
+                this.audioB = null;
+                this.volumeA = 0.5;
+                this.volumeB = 0.5;
+                this.correctAnswer = null;
+                this.hasPlayedBoth = false;
+                this.playedA = false;
+                this.playedB = false;
+                this.minVolumeDifference = 30; // Minimum percentage difference between volumes
+                this.gameHistory = []; // Game history storage
+                
+                this.initializeEventListeners();
+            }
+            
+            initializeEventListeners() {
+                document.getElementById('audioFiles').addEventListener('change', (e) => {
+                    this.loadAudioFiles(e.target.files);
+                });
+                
+                document.getElementById('difficultySlider').addEventListener('input', (e) => {
+                    this.updateDifficulty(e.target.value);
+                });
+                
+                document.getElementById('roundsSlider').addEventListener('input', (e) => {
+                    this.updateRounds(e.target.value);
+                });
+                
+                document.getElementById('playA').addEventListener('click', () => {
+                    this.playSound('A');
+                });
+                
+                document.getElementById('playB').addEventListener('click', () => {
+                    this.playSound('B');
+                });
+                
+                document.getElementById('stopA').addEventListener('click', () => {
+                    this.stopSound('A');
+                });
+                
+                document.getElementById('stopB').addEventListener('click', () => {
+                    this.stopSound('B');
+                });
+                
+                document.getElementById('choiceA').addEventListener('click', () => {
+                    this.makeChoice('A');
+                });
+                
+                document.getElementById('choiceB').addEventListener('click', () => {
+                    this.makeChoice('B');
+                });
+                
+                document.getElementById('choiceEqual').addEventListener('click', () => {
+                    this.makeChoice('EQUAL');
+                });
+                
+                document.getElementById('nextRound').addEventListener('click', () => {
+                    this.nextRound();
+                });
+            }
+            
+            updateDifficulty(value) {
+                this.minVolumeDifference = parseInt(value);
+                document.getElementById('difficultyValue').textContent = value + '%';
+            }
+            
+            updateRounds(value) {
+                this.maxRounds = parseInt(value);
+                document.getElementById('roundsValue').textContent = value;
+                document.getElementById('maxRounds').textContent = value;
+                document.getElementById('maxRounds2').textContent = value;
+            }
+            
+            loadAudioFiles(files) {
+                this.audioFiles = Array.from(files);
+                if (this.audioFiles.length > 0) {
+                    // Update rounds display
+                    document.getElementById('maxRounds').textContent = this.maxRounds;
+                    document.getElementById('maxRounds2').textContent = this.maxRounds;
+                    this.startNewRound();
+                    this.updateMessage('Files loaded! Click the play buttons to listen to the sounds.', 'info');
+                }
+            }
+            
+            startNewRound() {
+                if (this.audioFiles.length === 0) return;
+                
+                // Stop any playing audio
+                this.stopAllSounds();
+                
+                // Randomly select an audio file
+                const randomIndex = Math.floor(Math.random() * this.audioFiles.length);
+                this.currentAudio = this.audioFiles[randomIndex];
+                
+                // Convert minimum difference percentage to decimal (e.g., 30% -> 0.30)
+                const minDifferenceDecimal = this.minVolumeDifference / 100;
+                
+                // 20% chance of having equal volumes
+                const shouldBeEqual = Math.random() < 0.2;
+                
+                if (shouldBeEqual) {
+                    // Equal or very close volumes (difference < 5%)
+                    const baseVolume = 0.3 + Math.random() * 0.4; // Between 0.3 and 0.7
+                    const smallDifference = Math.random() * 0.04; // 0 to 4% difference
+                    
+                    this.volumeA = baseVolume;
+                    this.volumeB = baseVolume + (Math.random() < 0.5 ? smallDifference : -smallDifference);
+                    
+                    // Ensure volumeB stays within bounds
+                    this.volumeB = Math.max(0.2, Math.min(0.7, this.volumeB));
+                    
+                    this.correctAnswer = 'EQUAL';
+                } else {
+
+					var vol1=0.1 + (Math.random() * (0.7-0.1));
+					var min1=vol1+minDifferenceDecimal;
+					var max1=0.7;
+					var min2=0.1;
+					var max2=vol1-minDifferenceDecimal;
+					var bSel1=false;
+					var vol2=0;
+					
+					if ((min1<max1) && (min2<max2))
+					{
+						if (Math.random() < 0.5)
+						{
+							bSel1=true;
+						}
+					}
+					
+					if ((min1>max1) || bSel1)
+					{
+						// tirer entre min2 et max2
+						vol2=min2 + (max2-min2) * Math.random();
+					}
+					else
+					{
+						// tirer entre min1 et max1
+						vol2=min1 + (max1-min1) * Math.random();
+					}
+
+					if (Math.abs(vol2-vol1)<0.05)
+					{
+						this.volumeA = vol1;
+                        this.volumeB = vol2;
+						this.correctAnswer = 'EQUAL';
+					}
+					else
+						{
+						// Randomly choose if A or B will be louder
+						if (Math.random() < 0.5) 
+							{
+							// A louder than B
+							if (vol1>vol2)
+							{
+								this.volumeA = vol1;
+								this.volumeB = vol2;							
+							}
+							else
+							{
+								this.volumeA = vol2;
+								this.volumeB = vol1;							
+							}
+							this.correctAnswer = 'A';
+							} 
+						else 
+							{
+							// B louder than A
+							if (vol1>vol2)
+							{
+								this.volumeA = vol2;
+								this.volumeB = vol1;							
+							}
+							else
+							{
+								this.volumeA = vol1;
+								this.volumeB = vol2;							
+							}
+							this.correctAnswer = 'B';
+							}
+						}
+                }
+                
+                // Reset state
+                this.hasPlayedBoth = false;
+                this.playedA = false;
+                this.playedB = false;
+                
+                // Enable play buttons
+                document.getElementById('playA').disabled = false;
+                document.getElementById('playB').disabled = false;
+                document.getElementById('stopA').disabled = true;
+                document.getElementById('stopB').disabled = true;
+                
+                // Disable choice buttons
+                document.getElementById('choiceA').disabled = true;
+                document.getElementById('choiceB').disabled = true;
+                document.getElementById('choiceEqual').disabled = true;
+                
+                // Hide next button
+                document.getElementById('nextRound').style.display = 'none';
+                
+                console.log(`Round ${this.currentRound}: Volume A = ${this.volumeA.toFixed(2)}, Volume B = ${this.volumeB.toFixed(2)}, Correct = ${this.correctAnswer}, Min Diff = ${this.minVolumeDifference}%, Actual Diff = ${Math.abs(this.volumeA - this.volumeB).toFixed(2)}`);
+            }
+            
+            playSound(button) {
+                if (!this.currentAudio) return;
+                
+                // Stop previous sound if playing
+                this.stopSound(button);
+                
+                const audio = new Audio(URL.createObjectURL(this.currentAudio));
+                const volume = button === 'A' ? this.volumeA : this.volumeB;
+                
+                audio.volume = volume;
+                
+                // Store audio reference
+                if (button === 'A') {
+                    this.audioA = audio;
+                } else {
+                    this.audioB = audio;
+                }
+                
+                audio.play().catch(e => {
+                    console.error('Error playing audio:', e);
+                    this.updateMessage('Error playing audio file.', 'error');
+                });
+                
+                // Enable corresponding stop button
+                document.getElementById(`stop${button}`).disabled = false;
+                
+                // Mark as played
+                if (button === 'A') {
+                    this.playedA = true;
+                    document.getElementById('playA').style.background = 'linear-gradient(145deg, #555555, #333333)';
+                    document.getElementById('playA').style.borderColor = '#888888';
+                } else {
+                    this.playedB = true;
+                    document.getElementById('playB').style.background = 'linear-gradient(145deg, #555555, #333333)';
+                    document.getElementById('playB').style.borderColor = '#888888';
+                }
+                
+                // Handle audio end
+                audio.addEventListener('ended', () => {
+                    document.getElementById(`stop${button}`).disabled = true;
+                    if (button === 'A') {
+                        this.audioA = null;
+                    } else {
+                        this.audioB = null;
+                    }
+                });
+                
+                // Check if both sounds have been played
+                if (this.playedA && this.playedB) {
+                    this.hasPlayedBoth = true;
+                    document.getElementById('choiceA').disabled = false;
+                    document.getElementById('choiceB').disabled = false;
+                    document.getElementById('choiceEqual').disabled = false;
+                    this.updateMessage('Now choose which answer is correct!', 'info');
+                }
+            }
+            
+            stopSound(button) {
+                if (button === 'A' && this.audioA) {
+                    this.audioA.pause();
+                    this.audioA.currentTime = 0;
+                    this.audioA = null;
+                    document.getElementById('stopA').disabled = true;
+                } else if (button === 'B' && this.audioB) {
+                    this.audioB.pause();
+                    this.audioB.currentTime = 0;
+                    this.audioB = null;
+                    document.getElementById('stopB').disabled = true;
+                }
+            }
+            
+            stopAllSounds() {
+                this.stopSound('A');
+                this.stopSound('B');
+            }
+            
+            makeChoice(choice) {
+                if (!this.hasPlayedBoth) {
+                    this.updateMessage('You must listen to both sounds first!', 'error');
+                    return;
+                }
+                
+                // Stop all sounds
+                this.stopAllSounds();
+                
+                const isCorrect = choice === this.correctAnswer;
+                
+                // Record this round data in history
+                const roundData = {
+                    round: this.currentRound,
+                    volumeA: Math.round(this.volumeA * 100),
+                    volumeB: Math.round(this.volumeB * 100),
+                    correctAnswer: this.correctAnswer,
+                    userChoice: choice,
+                    isCorrect: isCorrect
+                };
+                this.gameHistory.push(roundData);
+                
+                // Convert volumes to percentages for display
+                const volumeAPercent = Math.round(this.volumeA * 100);
+                const volumeBPercent = Math.round(this.volumeB * 100);
+                
+                let message = '';
+                if (isCorrect) {
+                    this.score++;
+                    if (this.correctAnswer === 'EQUAL') {
+                        message = `✅ Correct! Both sounds had the same volume.<br>
+                                  📊 <strong>Sound A:</strong> ${volumeAPercent}% | <strong>Sound B:</strong> ${volumeBPercent}%`;
+                    } else {
+                        message = `✅ Correct! Sound ${this.correctAnswer} was louder.<br>
+                                  📊 <strong>Sound A:</strong> ${volumeAPercent}% | <strong>Sound B:</strong> ${volumeBPercent}%`;
+                    }
+                    this.updateMessage(message, 'success');
+                } else {
+                    if (this.correctAnswer === 'EQUAL') {
+                        message = `❌ Incorrect. Both sounds had the same volume.<br>
+                                  📊 <strong>Sound A:</strong> ${volumeAPercent}% | <strong>Sound B:</strong> ${volumeBPercent}%`;
+                    } else {
+                        message = `❌ Incorrect. Sound ${this.correctAnswer} was louder.<br>
+                                  📊 <strong>Sound A:</strong> ${volumeAPercent}% | <strong>Sound B:</strong> ${volumeBPercent}%`;
+                    }
+                    this.updateMessage(message, 'error');
+                }
+                
+                // Disable all buttons
+                document.getElementById('playA').disabled = true;
+                document.getElementById('playB').disabled = true;
+                document.getElementById('stopA').disabled = true;
+                document.getElementById('stopB').disabled = true;
+                document.getElementById('choiceA').disabled = true;
+                document.getElementById('choiceB').disabled = true;
+                document.getElementById('choiceEqual').disabled = true;
+                
+                // Update score display
+                document.getElementById('score').textContent = this.score;
+                
+                // Check if game is finished
+                if (this.currentRound >= this.maxRounds) {
+                    this.endGame();
+                } else {
+                    document.getElementById('nextRound').style.display = 'block';
+                }
+            }
+            
+            nextRound() {
+                this.currentRound++;
+                document.getElementById('round').textContent = this.currentRound;
+                
+                // Stop all sounds
+                this.stopAllSounds();
+                
+                // Reset button colors
+                document.getElementById('playA').style.background = 'linear-gradient(145deg, #333333, #1a1a1a)';
+                document.getElementById('playA').style.borderColor = '#666666';
+                document.getElementById('playB').style.background = 'linear-gradient(145deg, #333333, #1a1a1a)';
+                document.getElementById('playB').style.borderColor = '#666666';
+                
+                this.startNewRound();
+                this.updateMessage('New round! Listen to both sounds and find the correct answer.', 'info');
+            }
+            
+            endGame() {
+                const percentage = Math.round((this.score / this.maxRounds) * 100);
+                let performance = '';
+                
+                if (percentage >= 90) performance = 'Excellent! 🎉';
+                else if (percentage >= 70) performance = 'Very good! 👏';
+                else if (percentage >= 50) performance = 'Not bad! 👍';
+                else performance = 'Keep practicing! 💪';
+                
+                // Create summary table
+                const summaryTable = this.createSummaryTable();
+                
+                // Build final message with clear structure
+                const finalMessage = `
+                    <h3>
+                        🎯 Game finished! Final score: ${this.score}/${this.maxRounds} (${percentage}%)<br>
+                        ${performance}
+                    </h3>
+                    <p>
+                        📊 Game Summary:
+                    </p>
+					<p>
+                    <div class="summary-container" style="width: 100%;" >
+                        ${summaryTable}
+                    </div></p>
+                `;
+                
+                this.updateMessage(finalMessage, percentage >= 70 ? 'success' : 'info');
+                
+                // Offer to restart
+                setTimeout(() => {
+                    if (confirm('Would you like to play a new game?')) {
+                        this.resetGame();
+                    }
+                }, 3000);
+            }
+            
+            createSummaryTable() {
+                let tableHTML = `
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Round</th>
+                            <th>Sound A</th>
+                            <th>Sound B</th>
+                            <th>Correct Answer</th>
+                            <th>Your Choice</th>
+                            <th>Result</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                `;
+                
+                this.gameHistory.forEach(round => {
+                    const correctAnswerText = round.correctAnswer === 'EQUAL' ? 'Equal' : 
+                                            round.correctAnswer === 'A' ? 'A louder' : 'B louder';
+                    const userChoiceText = round.userChoice === 'EQUAL' ? 'Equal' : 
+                                         round.userChoice === 'A' ? 'A louder' : 'B louder';
+                    const resultClass = round.isCorrect ? 'result-correct' : 'result-incorrect';
+                    const resultText = round.isCorrect ? '✅ Correct' : '❌ Incorrect';
+                    
+                    tableHTML += `
+                    <tr>
+                        <td>${round.round}</td>
+                        <td>${round.volumeA}%</td>
+                        <td>${round.volumeB}%</td>
+                        <td>${correctAnswerText}</td>
+                        <td>${userChoiceText}</td>
+                        <td class="${resultClass}">${resultText}</td>
+                    </tr>
+                    `;
+                });
+                
+                tableHTML += `
+                    </tbody>
+                </table>
+                `;
+                
+                return tableHTML;
+            }
+            
+            resetGame() {
+                this.currentRound = 1;
+                this.score = 0;
+                this.gameHistory = []; // Clear history
+                document.getElementById('round').textContent = this.currentRound;
+                document.getElementById('score').textContent = this.score;
+                document.getElementById('maxRounds').textContent = this.maxRounds;
+                document.getElementById('maxRounds2').textContent = this.maxRounds;
+                
+                // Stop all sounds
+                this.stopAllSounds();
+                
+                // Reset button colors
+                document.getElementById('playA').style.background = 'linear-gradient(145deg, #333333, #1a1a1a)';
+                document.getElementById('playA').style.borderColor = '#666666';
+                document.getElementById('playB').style.background = 'linear-gradient(145deg, #333333, #1a1a1a)';
+                document.getElementById('playB').style.borderColor = '#666666';
+                
+                if (this.audioFiles.length > 0) {
+                    this.startNewRound();
+                    this.updateMessage('New game! Listen to both sounds and find the correct answer.', 'info');
+                }
+            }
+            
+            updateMessage(text, type) {
+                const messageEl = document.getElementById('message');
+                messageEl.innerHTML = text;
+                messageEl.className = `message ${type}`;
+            }
+        }
+        
+        // Initialize the game
+        const game = new VolumeDiscriminationGame();
+    </script>
+</body>
+</html>
